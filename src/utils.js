@@ -49,6 +49,7 @@ function workerGenerator(loaderContext, workerFilename, workerSource, options) {
   const esModule =
     typeof options.esModule !== "undefined" ? options.esModule : true;
   const fnName = `${workerConstructor}_fn`;
+  const publicPath = options.publicPath || '__webpack_public_path__';
 
   if (options.inline) {
     const InlineWorkerPath = stringifyRequest(
@@ -59,7 +60,7 @@ function workerGenerator(loaderContext, workerFilename, workerSource, options) {
     let fallbackWorkerPath;
 
     if (options.inline === "fallback") {
-      fallbackWorkerPath = `__webpack_public_path__ + ${JSON.stringify(
+      fallbackWorkerPath = `${publicPath} + ${JSON.stringify(
         workerFilename
       )}`;
     }
@@ -82,7 +83,7 @@ ${
 
   return `${
     esModule ? "export default" : "module.exports ="
-  } function ${fnName}() {\n  return new ${workerConstructor}(__webpack_public_path__ + ${JSON.stringify(
+  } function ${fnName}() {\n  return new ${workerConstructor}(${publicPath} + ${JSON.stringify(
     workerFilename
   )}${workerOptions ? `, ${JSON.stringify(workerOptions)}` : ""});\n}\n`;
 }
